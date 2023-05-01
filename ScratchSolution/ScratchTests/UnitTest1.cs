@@ -29,6 +29,7 @@ public class UnitTest1
     [InlineData(10, 5, 15)]
     public void CanAddOtherIntegers(int a, int b, int expected)
     {
+        // This is a theory. Pretty rad, right?
         int answer = a + b;
         Assert.Equal(expected, answer);
     }
