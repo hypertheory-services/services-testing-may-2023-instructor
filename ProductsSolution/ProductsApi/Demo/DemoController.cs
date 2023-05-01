@@ -7,6 +7,11 @@ public class DemoController : ControllerBase
     [HttpGet("/demo")]
     public async Task<ActionResult> GetTheDemo()
     {
-        return Ok();
+        var response = new DemoResponse
+        {
+            Message = "Hello from the Api!",
+            CreatedAt = DateTimeOffset.Now
+        };
+        return Ok(response);
     }
 }
