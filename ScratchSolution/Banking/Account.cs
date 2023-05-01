@@ -15,9 +15,19 @@ public class Account
 
     public void Withdraw(decimal amountToWithdraw)
     {
-        if (amountToWithdraw <= _balance)
+        GuardAgainstOverdraft(amountToWithdraw);
+
+
+        _balance -= amountToWithdraw;
+
+    }
+
+    private void GuardAgainstOverdraft(decimal amount)
+    {
+        if (amount > _balance)
         {
-            _balance -= amountToWithdraw;
+            throw new AccountOverdraftException();
         }
     }
+
 }

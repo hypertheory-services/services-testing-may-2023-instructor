@@ -11,20 +11,33 @@ public class Overdrafting
         var account = new Account();
         var openingBalance = account.GetBalance();
 
-        account.Withdraw(openingBalance + 0.01M);
+        try
+        {
+            account.Withdraw(openingBalance + 0.01M);
+        }
+        catch (Exception)
+        {
 
-        Assert.Equal(openingBalance, account.GetBalance());
+            // gulp!
+        }
+        finally
+        {
+
+            Assert.Equal(openingBalance, account.GetBalance());
+        }
     }
 
     [Fact]
-    public void BehaviorBeforeChange()
+    public void OverdraftThrowsAnException()
     {
         var account = new Account();
         var openingBalance = account.GetBalance();
-        var amountToWithdraw = 0.01M;
 
-        account.Withdraw(openingBalance + amountToWithdraw);
-
-        Assert.Equal(openingBalance - (openingBalance + amountToWithdraw), account.GetBalance());
+        Assert.Throws<AccountOverdraftException>(() =>
+        {
+            account.Withdraw(openingBalance + .01M);
+        });
     }
+
+
 }

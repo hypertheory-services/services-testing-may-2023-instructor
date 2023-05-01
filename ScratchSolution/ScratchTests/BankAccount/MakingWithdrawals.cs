@@ -7,6 +7,7 @@ public class MakingWithdrawals
     [Theory]
     [InlineData(100)]
     [InlineData(5000)]
+    
     public void MakingWithdrawalsLowersBalance(decimal amountToWithdraw)
     {
         var account = new Account();
