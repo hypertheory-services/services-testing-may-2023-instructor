@@ -23,4 +23,10 @@ public class ProductsValidation
         nameProp.Should().BeDecoratedWith<MaxLengthAttribute>(x => x.Length == 100);
 
     }
+
+    [Fact]
+    public void TheProductsControllerIsAnApiController()
+    {
+        // Check to see if that class has the attribue [ApiController]
+    }
 }
