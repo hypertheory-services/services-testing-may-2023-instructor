@@ -1,7 +1,7 @@
 using ProductsApi.Adapters;
 using ProductsApi.Demo;
 using ProductsApi.Products;
-
+using Marten;
 // CreateBuilder adds the "standard" good defaults for EVERYTHING
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +21,16 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddScoped<ICheckForUniqueValues, ProductSlugUniquenessChecker>();
 }
 
+var productsConnectionString = builder.Configuration.GetConnectionString("products") ?? throw new ArgumentNullException("Need a connection string for the products data base");
 
+builder.Services.AddMarten(options =>
+{
+    options.Connection(productsConnectionString);
+    if(builder.Environment.IsDevelopment())
+    {
+        options.AutoCreateSchemaObjects = Weasel.Core.AutoCreate.All;
+    }
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
