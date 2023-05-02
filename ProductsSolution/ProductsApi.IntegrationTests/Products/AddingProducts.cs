@@ -1,5 +1,7 @@
 ﻿
 using Alba;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using ProductsApi.Products;
 
 namespace ProductsApi.IntegrationTests.Products;
@@ -9,7 +11,18 @@ public class AddingProducts
     [Fact]
     public async Task TacoSalad()
     {
-        await using var host = await AlbaHost.For<Program>();
+        await using var host = await AlbaHost.For<Program>(options =>
+        {
+            options.ConfigureServices((context, sp) =>
+            {
+                sp.AddScoped<IGenerateSlugs>(sp =>
+                {
+                    var stubbedSlugThing = new Mock<IGenerateSlugs>();
+                    stubbedSlugThing.Setup(s => s.GenerateSlugForAsync(It.IsAny<string>())).ReturnsAsync("blammo");
+                    return stubbedSlugThing.Object;
+                });
+            });
+        });
 
         var request = new CreateProductRequest
         {
@@ -24,7 +37,7 @@ public class AddingProducts
 
         var expectedResponse = new CreateProductResponse
         {
-            Slug = "super-deluxe-dandruff-shampoo",
+            Slug = "blammo",
             Pricing = new ProductPricingInformation
             {
                 Retail = 42.23M,

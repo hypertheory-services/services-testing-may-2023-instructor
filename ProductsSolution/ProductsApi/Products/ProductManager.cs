@@ -2,11 +2,18 @@
 
 public class ProductManager : IManageTheProductCatalog
 {
+    private readonly IGenerateSlugs _slugGenerator;
+
+    public ProductManager(IGenerateSlugs slugGenerator)
+    {
+        _slugGenerator = slugGenerator;
+    }
+
     public async Task<CreateProductResponse> AddProductAsync(CreateProductRequest request)
     {
         var response = new CreateProductResponse
         {
-            Slug = "super-deluxe-dandruff-shampoo",
+            Slug = await _slugGenerator.GenerateSlugForAsync(request.Name),
             Pricing = new ProductPricingInformation
             {
                 Retail = 42.23M,

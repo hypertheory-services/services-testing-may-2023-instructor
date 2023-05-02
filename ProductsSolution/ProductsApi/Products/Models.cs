@@ -1,4 +1,6 @@
-﻿namespace ProductsApi.Products;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProductsApi.Products;
 
 /*
  * Name: the name of the product, as it should be displayed in our catalog.
@@ -10,6 +12,7 @@ Supplier:
 
 public record CreateProductRequest
 {
+    [Required,MinLength(3), MaxLength(100)]
     public string Name { get; init; } = string.Empty;
     public decimal Cost { get; init; }
     public SupplierInformation Supplier { get; init; } = new();
