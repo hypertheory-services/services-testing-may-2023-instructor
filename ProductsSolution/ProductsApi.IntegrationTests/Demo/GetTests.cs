@@ -1,6 +1,7 @@
 ﻿
 using Alba;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using ProductsApi.Adapters;
 using ProductsApi.Demo;
 
@@ -22,7 +23,9 @@ public class GetTests
         {
             options.ConfigureServices((context, sp) =>
             {
-                sp.AddSingleton<ISystemClock, FakeTestingClockAfterCutoff>();
+                var fakeClock = new Mock<ISystemClock>();
+                fakeClock.Setup(x => x.GetCurrent()).Returns(expectedResponse.CreatedAt);
+                sp.AddSingleton<ISystemClock>(p => fakeClock.Object);
             });
         });
 
@@ -54,7 +57,9 @@ public class GetTests
         {
             options.ConfigureServices((context, sp) =>
             {
-                sp.AddSingleton<ISystemClock, FakeTestingClockBeforeCutoff>();
+                var fakeClock = new Mock<ISystemClock>();
+                fakeClock.Setup(x => x.GetCurrent()).Returns(expectedResponse.CreatedAt);
+                sp.AddSingleton<ISystemClock>(p => fakeClock.Object);
             });
         });
 
@@ -74,17 +79,17 @@ public class GetTests
 }
 
 
-public class FakeTestingClockAfterCutoff : ISystemClock
-{
-    public DateTimeOffset GetCurrent()
-    {
-        return new DateTimeOffset(new DateTime(1969, 4, 20, 23, 59, 00), TimeSpan.FromHours(-4));
-    }
-}
-public class FakeTestingClockBeforeCutoff : ISystemClock
-{
-    public DateTimeOffset GetCurrent()
-    {
-        return new DateTimeOffset(new DateTime(1969, 4, 20, 13, 59, 00), TimeSpan.FromHours(-4));
-    }
-}
+//public class FakeTestingClockAfterCutoff : ISystemClock
+//{
+//    public DateTimeOffset GetCurrent()
+//    {
+//        return new DateTimeOffset(new DateTime(1969, 4, 20, 23, 59, 00), TimeSpan.FromHours(-4));
+//    }
+//}
+//public class FakeTestingClockBeforeCutoff : ISystemClock
+//{
+//    public DateTimeOffset GetCurrent()
+//    {
+//        return new DateTimeOffset(new DateTime(1969, 4, 20, 13, 59, 00), TimeSpan.FromHours(-4));
+//    }
+//}
