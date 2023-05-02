@@ -9,7 +9,7 @@ namespace ProductsApi.IntegrationTests.Products;
 public class AddingProducts
 {
     [Fact]
-    public async Task TacoSalad()
+    public async Task CreatingAProduct()
     {
         await using var host = await AlbaHost.For<Program>(options =>
         {

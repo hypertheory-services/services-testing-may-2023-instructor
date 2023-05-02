@@ -26,6 +26,7 @@ public class ProductManager : IManageTheProductCatalog
             }
 
         };
+        // Save the thing to the database.
         return response;
     }
 }
