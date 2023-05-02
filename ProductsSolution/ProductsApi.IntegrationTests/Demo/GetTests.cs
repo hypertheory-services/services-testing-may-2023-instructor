@@ -1,6 +1,7 @@
 ﻿
 using Alba;
 using Microsoft.Extensions.DependencyInjection;
+using ProductsApi.Adapters;
 using ProductsApi.Demo;
 
 namespace ProductsApi.IntegrationTests.Demo;
@@ -8,7 +9,7 @@ namespace ProductsApi.IntegrationTests.Demo;
 public class GetTests
 {
     [Fact]
-    public async Task GivesA200StatusCode()
+    public async Task ReturnsCorrectDataAfterCutoffForGettingCloseToQuittingTime()
     {
         var expectedResponse = new DemoResponse
         {
@@ -21,7 +22,39 @@ public class GetTests
         {
             options.ConfigureServices((context, sp) =>
             {
-                sp.AddSingleton<ISystemClock, FakeTestingClock>();
+                sp.AddSingleton<ISystemClock, FakeTestingClockAfterCutoff>();
+            });
+        });
+
+        // "Scenarios"
+        var response = await host.Scenario(api =>
+        {
+            api.Get.Url("/demo");
+            api.StatusCodeShouldBeOk();
+            api.Header("content-type").ShouldHaveValues("application/json; charset=utf-8");
+        });
+
+        var actualResponse = response.ReadAsJson<DemoResponse>();
+
+        Assert.Equal(expectedResponse, actualResponse);
+        // Assert.Equal(expectedResponse.Message, actualResponse.Message);
+    }
+
+    [Fact]
+    public async Task ReturnsCorrectDataBeforeCutoffForGettingCloseToQuittingTime()
+    {
+        var expectedResponse = new DemoResponse
+        {
+            Message = "Hello from the Api!",
+            CreatedAt = new DateTimeOffset(new DateTime(1969, 4, 20, 13, 59, 00), TimeSpan.FromHours(-4)),
+            GettingCloseToQuittingTime = false
+        };
+
+        await using var host = await AlbaHost.For<Program>(options =>
+        {
+            options.ConfigureServices((context, sp) =>
+            {
+                sp.AddSingleton<ISystemClock, FakeTestingClockBeforeCutoff>();
             });
         });
 
@@ -41,10 +74,17 @@ public class GetTests
 }
 
 
-public class FakeTestingClock : ISystemClock
+public class FakeTestingClockAfterCutoff : ISystemClock
 {
     public DateTimeOffset GetCurrent()
     {
         return new DateTimeOffset(new DateTime(1969, 4, 20, 23, 59, 00), TimeSpan.FromHours(-4));
+    }
+}
+public class FakeTestingClockBeforeCutoff : ISystemClock
+{
+    public DateTimeOffset GetCurrent()
+    {
+        return new DateTimeOffset(new DateTime(1969, 4, 20, 13, 59, 00), TimeSpan.FromHours(-4));
     }
 }
