@@ -18,17 +18,39 @@ public class PricingManager : IManagePricing
         {
             var response = new ProductPricingInformation
             {
-                Retail = info.RequiredMsrp.HasValue ? info.RequiredMsrp.Value : product.Cost * .20M,
+                Retail = PricingCalculations.CalculateRetailPrice(product, info),
                 Wholesale = new ProductPricingWholeInformation
                 {
-                    Wholesale = info.AllowWholesale ? product.Cost * 1.78M : product.Cost * .20M,
-                    MinimumPurchaseRequired = product.Cost < 10 ? 10 : 5
+                    Wholesale = PricingCalculations.CalculateWholesalePrice(product, info),
+                    MinimumPurchaseRequired = PricingCalculations.CalculateMinimumPurchaseQty(product)
                 }
             };
             return response;
-        } else
+        }
+        else
         {
             throw new Exception("Blammo");
         }
+    }
+
+    
+}
+
+
+public static class PricingCalculations
+{
+    public static int CalculateMinimumPurchaseQty(CreateProductRequest product)
+    {
+        return product.Cost < 10 ? 10 : 5;
+    }
+
+    public static decimal CalculateWholesalePrice(CreateProductRequest product, SupplierPricingInformationResponse info)
+    {
+        return info.AllowWholesale ? product.Cost * 1.78M : product.Cost * .20M;
+    }
+
+    public static decimal CalculateRetailPrice(CreateProductRequest product, SupplierPricingInformationResponse info)
+    {
+        return info.RequiredMsrp.HasValue ? info.RequiredMsrp.Value : product.Cost * .20M;
     }
 }

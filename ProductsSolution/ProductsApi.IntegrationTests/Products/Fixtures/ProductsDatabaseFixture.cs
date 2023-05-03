@@ -8,6 +8,7 @@ using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WireMock.Server;
 
 namespace ProductsApi.IntegrationTests.Products.Fixtures;
 
@@ -17,6 +18,7 @@ public class ProductsDatabaseFixture : IAsyncLifetime
 
     public IAlbaHost AlbaHost = null!;
     private readonly PostgreSqlContainer _pgContainer;
+    public WireMockServer MockServer = null!;
 
     public ProductsDatabaseFixture()
     {
@@ -31,6 +33,7 @@ public class ProductsDatabaseFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        MockServer = WireMockServer.Start(1338);
         await _pgContainer.StartAsync();
         AlbaHost = await Alba.AlbaHost.For<Program>(builder =>
         {
@@ -53,6 +56,7 @@ public class ProductsDatabaseFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
+        MockServer.Stop();
         await AlbaHost.DisposeAsync();
         await _pgContainer.DisposeAsync().AsTask();
     }
