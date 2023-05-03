@@ -33,7 +33,7 @@ public class ProductsDatabaseFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        MockServer = WireMockServer.Start(1338);
+        MockServer = WireMockServer.Start(1338); // TODO: Fix this.. 
         await _pgContainer.StartAsync();
         AlbaHost = await Alba.AlbaHost.For<Program>(builder =>
         {
@@ -56,6 +56,7 @@ public class ProductsDatabaseFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
+        MockServer.Reset();
         MockServer.Stop();
         await AlbaHost.DisposeAsync();
         await _pgContainer.DisposeAsync().AsTask();

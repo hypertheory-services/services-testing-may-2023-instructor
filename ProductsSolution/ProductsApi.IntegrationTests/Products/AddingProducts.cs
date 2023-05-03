@@ -89,6 +89,7 @@ public class AddingProducts : IClassFixture<ProductsDatabaseFixture>
         var lookupResponseProduct = savedResonse.ReadAsJson<CreateProductResponse>();
         Assert.Equal(expectedResponse, lookupResponseProduct);
     }
+
 }
 
 
