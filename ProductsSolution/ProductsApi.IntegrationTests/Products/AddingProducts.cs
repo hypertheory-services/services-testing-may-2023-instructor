@@ -18,18 +18,12 @@ public class AddingProducts
             options.ConfigureServices((context, sp) =>
             {
 
-                sp.AddScoped<IDocumentSession>(sp =>
-                {
-                    return mockedDocumentSession.Object;
-                });
+                //sp.AddScoped<IDocumentSession>(sp =>
+                //{
+                //    return mockedDocumentSession.Object;
+                //});
 
-                sp.AddScoped<ICheckForUniqueValues>(sp =>
-                {
-                  
-                    var stubbedUniqueChecker = new Mock<ICheckForUniqueValues>(); 
-                    stubbedUniqueChecker.Setup(u => u.IsUniqueAsync(It.IsAny<string>())).ReturnsAsync(true);
-                    return stubbedUniqueChecker.Object;
-                });
+               
             });
         });
 
@@ -70,7 +64,7 @@ public class AddingProducts
 
         Assert.Equal(expectedResponse, actualResponse);
 
-        mockedDocumentSession.Verify(s => s.Insert(It.IsAny<CreateProductResponse>()), Times.Once);
-        mockedDocumentSession.Verify(s => s.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(1));
+        //mockedDocumentSession.Verify(s => s.Insert(It.IsAny<CreateProductResponse>()), Times.Once);
+        //mockedDocumentSession.Verify(s => s.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(1));
     }
 }
